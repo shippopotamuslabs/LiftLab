@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun RpePicker(
+    modifier: Modifier = Modifier,
     visible: Boolean,
     onRpeSelected: (rpe: Double) -> Unit,
 ) {
@@ -58,17 +59,17 @@ fun RpePicker(
         visible = isVisible,
         enter = slideInVertically(
             initialOffsetY = { it },
-            animationSpec = tween(durationMillis = 300)
+            animationSpec = tween(durationMillis = 100)
         ) + fadeIn(),
         exit = slideOutVertically(
             targetOffsetY = { it },
-            animationSpec = tween(durationMillis = 300)
+            animationSpec = tween(durationMillis = 100)
         ) + fadeOut(),
     ) {
         ElevatedCard(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .height(LocalConfiguration.current.screenHeightDp.dp / 4),
+                .height(LocalConfiguration.current.screenHeightDp.dp.times(.30f)),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer
             ),
@@ -101,9 +102,12 @@ fun RpePicker(
                 if (selectedRpeOption != null) {
                     val repsLeftInTank = 10.0 - selectedRpeOption!!
                     val repsLeftInTankText = if (repsLeftInTank.toInt().toDouble() == repsLeftInTank) {
-                        if (repsLeftInTank > 0) {
+                        if (repsLeftInTank > 1) {
                             "You could comfortably perform ${repsLeftInTank.toInt()} more reps before failure."
-                        } else {
+                        } else if (repsLeftInTank == 1.0) {
+                            "You could comfortably perform ${repsLeftInTank.toInt()} more rep before failure."
+                        }
+                        else {
                             "Maximal exertion. No more reps possible."
                         }
                     }
