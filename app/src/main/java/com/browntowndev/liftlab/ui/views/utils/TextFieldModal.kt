@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +39,8 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun TextFieldModal(
     header: String,
+    subtext: String = "",
+    placeholder: String = "",
     initialTextFieldValue: Int,
     onConfirm: (Int) -> Unit,
     onCancel: () -> Unit,
@@ -47,12 +52,14 @@ fun TextFieldModal(
 
     GenericTextFieldModal(
         header = header,
+        subtext = subtext,
         value = initialTextFieldValue,
         onConfirm = { onConfirm(text) },
         onCancel = onCancel
     ) {
         IntegerTextField(
             modifier = Modifier.width(100.dp),
+            placeholder = placeholder,
             value = text,
             onValueChanged = {
                 text = it
@@ -64,6 +71,8 @@ fun TextFieldModal(
 @Composable
 fun TextFieldModal(
     header: String,
+    subtext: String = "",
+    placeholder: String = "",
     initialTextFieldValue: String,
     onConfirm: (String) -> Unit,
     onCancel: () -> Unit,
@@ -72,12 +81,15 @@ fun TextFieldModal(
 
     GenericTextFieldModal(
         header = header,
+        subtext = subtext,
         value = text,
         onConfirm = { onConfirm(it.text) },
         onCancel = onCancel
     ) {
-        FocusedRoundTextField(
+        FocusableRoundTextField(
             textFieldValue = text,
+            focus = text.text.isNotEmpty(),
+            placeholder = placeholder,
             onTextFieldValueChange = {
                 text = it
             }
@@ -88,6 +100,7 @@ fun TextFieldModal(
 @Composable
 private fun <T> GenericTextFieldModal(
     header: String,
+    subtext: String = "",
     value: T,
     onConfirm: (T) -> Unit,
     onCancel: () -> Unit,
@@ -118,6 +131,15 @@ private fun <T> GenericTextFieldModal(
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
+                    )
+                    Divider(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = subtext,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                     Divider(thickness = 20.dp, color = MaterialTheme.colorScheme.background)
                     textField()
