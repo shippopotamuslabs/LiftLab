@@ -24,7 +24,7 @@ data class WorkoutBuilderScreen(
     override val subtitle: String = navigation.subtitle,
 ) : BaseScreen(), KoinComponent {
     companion object {
-        val navigation = NavItem("Lab", "", "workoutBuilder/{id}")
+        val navigation = NavItem("", "", "workoutBuilder/{id}")
 
         const val RENAME_WORKOUT_ICON = "renameWorkoutIcon"
         const val REORDER_LIFTS = "reorderLifts"
