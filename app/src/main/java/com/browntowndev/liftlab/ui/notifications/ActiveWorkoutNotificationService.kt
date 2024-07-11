@@ -17,18 +17,21 @@ import androidx.core.app.NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 import com.browntowndev.liftlab.MainActivity
 import com.browntowndev.liftlab.R
 import com.browntowndev.liftlab.core.common.LiftLabTimer
+import com.browntowndev.liftlab.core.common.MAX_TIME_IN_WHOLE_MILLISECONDS
 import com.browntowndev.liftlab.core.common.toTimeString
 
-class RestTimerNotificationService : Service() {
+class ActiveWorkoutNotificationService : Service() {
     companion object {
-        private const val NOTIFICATION_ID = 1
-        private const val CHANNEL_ID = "RestTimerForegroundService"
-        private const val CHANNEL_NAME = "RestTimerForegroundService"
-        const val SKIP_ACTION = "Skip"
-        const val EXTRA_COUNT_DOWN_FROM = "com.browntowndev.liftlab.countDownFrom"
+        const val NOTIFICATION_ID = 2
+        private const val CHANNEL_ID = "ActiveWorkoutForegroundService"
+        private const val CHANNEL_NAME = "ActiveWorkoutForegroundService"
+        const val WORKOUT_NAME_EXTRA = "com.browntowndev.liftlab.workoutname"
+        const val NEXT_SET_EXTRA = "com.browntowndev.liftlab.nextset"
+        const val DURATION_EXTRA = "com.browntowndev.liftlab.duration"
     }
 
-    private var _countDownTimer: LiftLabTimer? = null
+    private var _nextSet: String = ""
+    private var _durationTimer: LiftLabTimer? = null
     private val _notificationManager: NotificationManager by lazy {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
@@ -41,22 +44,14 @@ class RestTimerNotificationService : Service() {
             PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
         }
 
-        val skipButtonPendingIntent = Intent(this, RestTimerButtonHandler::class.java).apply {
-            action = SKIP_ACTION
-        }.let {
-            PendingIntent.getBroadcast(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
-        }
-
         NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.lab_flask)
-            .setContentTitle("Rest Timer")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
-            .addAction(R.drawable.skip_icon, "Skip", skipButtonPendingIntent)
             .setContentIntent(returnToWorkoutPendingIntent)
     }
 
@@ -80,15 +75,20 @@ class RestTimerNotificationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(Log.DEBUG.toString(), "onStartCommand()")
 
-        val countDownFrom = intent?.getLongExtra(EXTRA_COUNT_DOWN_FROM, 0L) ?: 0L
-        _countDownTimer = object : LiftLabTimer(
-            countDown = true,
-            millisInFuture = countDownFrom,
-            countDownInterval = 100L,
+        val workoutName = intent?.getStringExtra(WORKOUT_NAME_EXTRA) ?: ""
+        _notificationBuilder.setContentTitle(workoutName)
+
+        _nextSet = intent?.getStringExtra(NEXT_SET_EXTRA) ?: ""
+
+        val startDuration = intent?.getLongExtra(DURATION_EXTRA, 0L) ?: 0L
+        _durationTimer = object : LiftLabTimer(
+            countDown = false,
+            millisInFuture = MAX_TIME_IN_WHOLE_MILLISECONDS,
+            countDownInterval = 1000L,
         ) {
             override fun onTick(newTimeInMillis: Long) {
-                val timeRemaining = newTimeInMillis.toTimeString()
-                updateTime(time = timeRemaining)
+                val newDuration = startDuration + newTimeInMillis
+                updateTime(time = newDuration.toTimeString())
             }
 
             override fun onFinish() {
@@ -101,13 +101,14 @@ class RestTimerNotificationService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        _countDownTimer?.cancel()
+        _durationTimer?.cancel()
         _notificationManager.cancel(NOTIFICATION_ID)
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun updateTime(time: String) {
-        _notificationBuilder.setContentText(time)
+        _notificationBuilder.setSubText(time)
+        _notificationBuilder.setContentText(_nextSet)
         _notificationManager.notify(NOTIFICATION_ID, _notificationBuilder.build())
     }
 
@@ -117,7 +118,7 @@ class RestTimerNotificationService : Service() {
             CHANNEL_NAME,
             NotificationManager.IMPORTANCE_LOW
         )
-        channel.description = "Rest Timer Foreground Service"
+        channel.description = "Active Workout Foreground Service"
         channel.setShowBadge(false)
         channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         _notificationManager.createNotificationChannel(channel)
