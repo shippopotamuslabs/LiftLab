@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "1263a59d0362ef0c50c2c113bf356ca7",
+    "identityHash": "a4320b776bca7e6b3ef29d8462c02710",
     "entities": [
       {
         "tableName": "lifts",
@@ -1149,7 +1149,7 @@
       },
       {
         "tableName": "workoutsInProgress",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workout_in_progress_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `workoutId` INTEGER NOT NULL, `startTime` INTEGER NOT NULL, `firestoreId` TEXT DEFAULT NULL, `lastUpdated` INTEGER DEFAULT NULL, `synced` INTEGER NOT NULL DEFAULT false)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workout_in_progress_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `workoutId` INTEGER NOT NULL, `startTime` INTEGER NOT NULL, `firestoreId` TEXT DEFAULT NULL, `lastUpdated` INTEGER DEFAULT NULL, `synced` INTEGER NOT NULL DEFAULT false, FOREIGN KEY(`workoutId`) REFERENCES `workouts`(`workout_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1194,7 +1194,31 @@
           "columnNames": [
             "workout_in_progress_id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_workoutsInProgress_workoutId",
+            "unique": false,
+            "columnNames": [
+              "workoutId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workoutsInProgress_workoutId` ON `${TABLE_NAME}` (`workoutId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workouts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "workoutId"
+            ],
+            "referencedColumns": [
+              "workout_id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "restTimerInProgress",
@@ -1393,7 +1417,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1263a59d0362ef0c50c2c113bf356ca7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4320b776bca7e6b3ef29d8462c02710')"
     ]
   }
 }
