@@ -18,12 +18,13 @@ here is `master`, a leftover of its age.
 
 ## Stack
 
-- Kotlin, Jetpack Compose UI
-- Firebase: Auth, Firestore, Crashlytics, App Check, Firebase AI
-- Room for local data (schemas in `app/schemas/`)
-- Two small KSP modules of its own: `annotations/` and
-  `annotation_generator/`, a hand-rolled annotation processor experiment
-- Modules: `:app`, `:annotations`, `:annotation_generator`
+| Area | Choice |
+| --- | --- |
+| Language and UI | Kotlin, Jetpack Compose |
+| Backend | Firebase: Auth, Firestore, Crashlytics, App Check, Firebase AI |
+| Local data | Room (schemas in `app/schemas/`) |
+| Code generation | Two small KSP modules of its own, `annotations/` and `annotation_generator/`: a hand-rolled annotation processor experiment |
+| Modules | `:app`, `:annotations`, `:annotation_generator` |
 
 The directories `.Jules/` and `.jules/` hold notes from sessions with
 Google's Jules coding agent, which did some of the later work in this repo.
