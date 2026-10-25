@@ -43,5 +43,4 @@ Google's Jules coding agent, which did some of the later work in this repo.
 
 ## License
 
-See `LICENSE`. Copyright (C) 2026 sean-brown-dev, permissive terms as written
-in that file.
+0BSD license. Do whatever you want with the code. Just don't expect it to work or sue me.
