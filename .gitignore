@@ -32,3 +32,7 @@ google-services.json
 app/release
 *.salive
 gradle.properties
+
+# Jules agent session state (local only, never tracked)
+.jules/
+.Jules/
